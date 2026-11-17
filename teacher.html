@@ -9,36 +9,38 @@
 
 
 <body>
-    <h1>Teacher Dashboard</h1>
-    <h2 id="date"></h2>
+        <main class="content-panel">
+        <h1>Teacher Dashboard</h1>
+        <h2 id="date"></h2>
 
-    <h2>Select Period</h2>
+        <h2>Select Period</h2>
 
-    <div class periodButtons>
-        <button onclick="showPeriod(1)">Period 1</button>
-        <button onclick="showPeriod(2)">Period 2</button>
-        <button onclick="showPeriod(3)">Period 3</button>
-        <button onclick="showPeriod(4)">Period 4</button>
-    </div>
+        <div class periodButtons>
+            <button onclick="showPeriod(1)">Period 1</button>
+            <button onclick="showPeriod(2)">Period 2</button>
+            <button onclick="showPeriod(3)">Period 3</button>
+            <button onclick="showPeriod(4)">Period 4</button>
+        </div>
 
-    <h2 id="periodTitle">Period 1 Records</h2>
+        <h2 id="periodTitle">Period 1 Records</h2>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Student Name</th>
-                <th>Student Number</th>
-                <th>Sign-Out Time</th>
-                <th>Sign-In Time</th>
-                <th>Status</th>
-            </tr>
-        </thead>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student Number</th>
+                    <th>Sign-Out Time</th>
+                    <th>Sign-In Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
 
-        <tbody id="recordsTable">
-        </tbody>
-    </table>
+            <tbody id="recordsTable">
+            </tbody>
+        </table>
 
-    <a href="homepage.html">Return to Homepage</a>
+        <a href="homepage.html">Return to Homepage</a>
+    </main>
 
 </body>
 </html>
