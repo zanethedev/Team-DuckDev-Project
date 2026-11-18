@@ -1,68 +1,83 @@
 
 // Display today's date
-let today = new Date();
+//let today = new Date();
 
-document.getElementById("date").textContent =
-    today.toDateString();
+//document.getElementById("date").textContent =
+//    today.toDateString();
 
 
-// Temporary sample records
-let records = [
-    {
-        name: "John Smith",
-        number: "123456",
-        period: 1,
-        out: "9:15 AM",
-        back: "9:25 AM"
-    },
-    {
-        name: "Jane Doe",
-        number: "654321",
-        period: 1,
-        out: "9:20 AM",
-        back: ""
-    },
-    {
-        name: "Alex Brown",
-        number: "456789",
-        period: 2,
-        out: "10:30 AM",
-        back: "10:40 AM"
+//
+    let currentSelectedPeriod = 1;
+//
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        // Display current date in <h2 id="date">
+        const dateElement = document.getElementById("date");
+        const today = new Date();
+        dateElement.textContent = today.toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+    
+        // Load Period 1 by default on page load
+        showPeriod(1);
+    
+        // Automatically refresh the table if the Student tab updates localStorage
+        window.addEventListener("storage", (event) => {
+            if (event.key === "hallPassRecords") {
+                showPeriod(currentSelectedPeriod);
+            }
+        });
+    });
+    
+    // Exposed globally so onclick="showPeriod(1)" in teacher.html works
+    function showPeriod(periodNumber) {
+        currentSelectedPeriod = periodNumber;
+    
+        const periodTitle = document.getElementById("periodTitle");
+        const tableBody = document.getElementById("recordsTable");
+    
+        periodTitle.textContent = `Period ${periodNumber} Records`;
+        tableBody.innerHTML = "";
+    
+        const todayString = new Date().toISOString().split("T")[0];
+        const allRecords = JSON.parse(localStorage.getItem("hallPassRecords")) || [];
+    
+        // Filter records for today and the selected period
+        const filteredRecords = allRecords.filter(
+            (record) => record.date === todayString && record.period === periodNumber
+        );
+    
+        if (filteredRecords.length === 0) {
+            const emptyRow = document.createElement("tr");
+            emptyRow.innerHTML = `<td colspan="5" style="text-align: center;">No sign-out records for Period ${periodNumber} today.</td>`;
+            tableBody.appendChild(emptyRow);
+            return;
+        }
+    
+        // Populate table rows
+        filteredRecords.forEach((record) => {
+            const row = document.createElement("tr");
+    
+            const statusColor = record.status === "Out" ? "red" : "green";
+    
+            row.innerHTML = `
+                <td>${escapeHTML(record.studentName)}</td>
+                <td>${escapeHTML(record.studentNumber)}</td>
+                <td>${record.signOutTime}</td>
+                <td>${record.signInTime}</td>
+                <td style="color: ${statusColor}; font-weight: bold;">${record.status}</td>
+            `;
+    
+            tableBody.appendChild(row);
+        });
     }
-];
-
-
-// Display records for selected period
-function showPeriod(period) {
-
-    let table = document.getElementById("recordsTable");
-
-    document.getElementById("periodTitle").textContent =
-        "Period " + period + " Records";
-
-    table.innerHTML = "";
-
-    let filteredRecords = records.filter(function(record) {
-        return record.period === period;
-    });
-
-    filteredRecords.forEach(function(record) {
-
-        let status = record.back === "" ?
-            "Signed Out" : "Returned";
-
-        let row = table.insertRow();
-
-        row.insertCell(0).textContent = record.name;
-        row.insertCell(1).textContent = record.number;
-        row.insertCell(2).textContent = record.out;
-        row.insertCell(3).textContent = record.back || "";
-        row.insertCell(4).textContent = status;
-
-    });
-
-}
-
-// Initially display Period 1
-showPeriod(1);
-
+    
+    // Prevent HTML injection from text inputs
+    function escapeHTML(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
