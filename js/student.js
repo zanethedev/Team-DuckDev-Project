@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const buttons = document.querySelectorAll("form button");
 
     // Assign buttons based on their order in your HTML (0 = Sign In, 1 = Sign Out)
-    const signInBtn = buttons[0];
-    const signOutBtn = buttons[1];
+    const signOutBtn = buttons[0];
+    const signInBtn = buttons[1];
 
     // Create a status message element below the form for user feedback
     const feedbackMsg = document.createElement("p");
