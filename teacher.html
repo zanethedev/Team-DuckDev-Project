@@ -9,17 +9,19 @@
 
 
 <body>
+    <div class="navigation-header">
+         <a href="homepage.html">Return to Homepage</a>
+    </div>
     <main class="content-panel">
-        <h1>Teacher Dashboard</h1>
-        <h2 id="date"></h2>
+        <h1 id="date"></h1>
 
-        <div class periodButtons>
+        <div class = "periodButtons">
             <button onclick="showPeriod(1)">Period 1</button>
             <button onclick="showPeriod(2)">Period 2</button>
             <button onclick="showPeriod(3)">Period 3</button>
             <button onclick="showPeriod(4)">Period 4</button>
         </div>
-
+        <br><br>
         <h2 id="periodTitle">Period 1 Records</h2>
 
         <table border="1">
@@ -36,8 +38,6 @@
             <tbody id="recordsTable">
             </tbody>
         </table>
-
-        <a href="homepage.html">Return to Homepage</a>
     </main>
 
 </body>
