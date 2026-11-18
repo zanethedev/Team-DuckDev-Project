@@ -57,7 +57,7 @@ button{
 }
 
 .navigation-header {
-    width: 100%;
+    width: min(100%, 80rem);
     display: flex;
     justify-content: flex-start;
     align-items: center;
