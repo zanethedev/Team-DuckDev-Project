@@ -17,12 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function getCurrentPeriod(dateObj) {
         const totalMinutes = dateObj.getHours() * 60 + dateObj.getMinutes();
 
-        if (totalMinutes >= 480 && totalMinutes < 570) return 1;  // 8:00 AM - 9:30 AM
-        if (totalMinutes >= 570 && totalMinutes < 660) return 2;  // 9:30 AM - 11:00 AM
-        if (totalMinutes >= 660 && totalMinutes < 780) return 3;  // 11:00 AM - 1:00 PM
-        if (totalMinutes >= 780 && totalMinutes < 900) return 4;  // 1:00 PM - 3:00 PM
+        if (totalMinutes >= 505 && totalMinutes < 580) return 1;  // 8:25 AM - 9:40 AM
+        if (totalMinutes >= 583 && totalMinutes < 658) return 2;  // 9:43 AM - 10:58 AM
+        if (totalMinutes >= 733 && totalMinutes < 808) return 3;  // 12:13 PM - 1:28 PM
+        if (totalMinutes >= 811 && totalMinutes < 886) return 4;  // 1:31 PM - 2:46 PM
 
-        return 1; // Default fallback to Period 1 outside school hours
+        return 1; // Default fallback outside school periods
     }
 
     // Helper: Format timestamp cleanly (e.g., "2:16:05 PM")
