@@ -1,71 +1,67 @@
+import { db } from "./firebase.js";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    doc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const nameInput = document.getElementById("studentName");
     const numberInput = document.getElementById("studentNumber");
     const buttons = document.querySelectorAll("form button");
 
-    // Assign buttons based on their order in your HTML (0 = Sign In, 1 = Sign Out)
     const signOutBtn = buttons[0];
     const signInBtn = buttons[1];
 
-    // Create a status message element below the form for user feedback
     const feedbackMsg = document.createElement("p");
     feedbackMsg.style.fontWeight = "bold";
     document.querySelector("form").appendChild(feedbackMsg);
 
-    // Helper: Determine current period based on time of day (24-hour clock)
-    // Adjust these times to match your school's actual bell schedule
     function getCurrentPeriod(dateObj) {
         const totalMinutes = dateObj.getHours() * 60 + dateObj.getMinutes();
 
-        if (totalMinutes >= 505 && totalMinutes < 580) return 1;  // 8:25 AM - 9:40 AM
-        if (totalMinutes >= 583 && totalMinutes < 658) return 2;  // 9:43 AM - 10:58 AM
-        if (totalMinutes >= 733 && totalMinutes < 808) return 3;  // 12:13 PM - 1:28 PM
-        if (totalMinutes >= 811 && totalMinutes < 886) return 4;  // 1:31 PM - 2:46 PM
+        if (totalMinutes >= 505 && totalMinutes < 580) return 1;
+        if (totalMinutes >= 583 && totalMinutes < 658) return 2;
+        if (totalMinutes >= 733 && totalMinutes < 808) return 3;
+        if (totalMinutes >= 811 && totalMinutes < 886) return 4;
 
-        return 1; // Default fallback outside school periods
+        return 1;
     }
 
-    // Helper: Format timestamp cleanly (e.g., "2:16:05 PM")
     function formatTime(dateObj) {
-    return dateObj.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
+        return dateObj.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
         });
     }
 
-    // Helper: Format today's date (e.g., "2026-11-18")
     function getTodayDateString(dateObj) {
-        return dateObj.toISOString().split("T")[0];
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
     }
 
-    // Helper: Load existing records from localStorage
-    function getRecords() {
-        const data = localStorage.getItem("hallPassRecords");
-        return data ? JSON.parse(data) : [];
-    }
-
-    // Helper: Save updated records to localStorage
-    function saveRecords(records) {
-        localStorage.setItem("hallPassRecords", JSON.stringify(records));
-    }
-
-    // Helper: Validate inputs and show messages
     function validateInputs() {
-    const name = nameInput.value.trim();
-    const number = numberInput.value.trim();
+        const name = nameInput.value.trim();
+        const number = numberInput.value.trim();
 
-    if (!name || !number) {
-        showFeedback("Please enter both your Student Name and Student Number.", "red");
-        return null;
-    }
+        if (!name || !number) {
+            showFeedback("Please enter both your Student Name and Student Number.", "red");
+            return null;
+        }
 
-    // Check that the student number contains only digits and is 6–7 digits long
-    if (!/^\d{6,7}$/.test(number)) {
-        showFeedback("Student Number must be valid.", "red");
-        return null;
-    }
+        if (!/^\d{6,7}$/.test(number)) {
+            showFeedback("Student Number must be valid.", "red");
+            return null;
+        }
 
-    return { name, number };
+        return { name, number };
     }
 
     function showFeedback(message, color) {
@@ -73,91 +69,112 @@ document.addEventListener("DOMContentLoaded", () => {
         feedbackMsg.style.color = color;
     }
 
-    // ACTION 1: Student Signs Out (Leaving class)
-    signOutBtn.addEventListener("click", () => {
+    async function getTodaysRecords(today) {
+        const recordsQuery = query(
+            collection(db, "hallPassRecords"),
+            where("date", "==", today)
+        );
+
+        const snapshot = await getDocs(recordsQuery);
+
+        return snapshot.docs.map(document => ({
+            id: document.id,
+            ...document.data()
+        }));
+    }
+
+    // STUDENT SIGNS OUT
+    signOutBtn.addEventListener("click", async () => {
         const student = validateInputs();
         if (!student) return;
 
-        const now = new Date();
-        const today = getTodayDateString(now);
-        const records = getRecords();
+        try {
+            const now = new Date();
+            const today = getTodayDateString(now);
+            const records = await getTodaysRecords(today);
 
-        // Check if this student is ALREADY signed out and hasn't returned yet
-        const activeRecord = records.find(
-            (r) =>
-                r.studentNumber === student.number &&
-                r.date === today &&
-                r.status === "Out"
-        );
-
-        if (activeRecord) {
-            showFeedback(
-                `${student.name} is already signed out (since ${activeRecord.signOutTime.replace(/:\d{2}(?=\s*[AP]M$)/, "")}). Please Sign In first.`,
-                "orange"
+            const activeRecord = records.find(
+                record =>
+                    record.studentNumber === student.number &&
+                    record.status === "Out"
             );
-            return;
+
+            if (activeRecord) {
+                showFeedback(
+                    `${student.name} is already signed out (since ${activeRecord.signOutTime}). Please Sign In first.`,
+                    "orange"
+                );
+                return;
+            }
+
+            const currentPeriod = getCurrentPeriod(now);
+
+            await addDoc(collection(db, "hallPassRecords"), {
+                date: today,
+                period: currentPeriod,
+                studentName: student.name,
+                studentNumber: student.number,
+                signOutTime: formatTime(now),
+                signInTime: "—",
+                status: "Out"
+            });
+
+            showFeedback(
+                `Signed OUT: ${student.name} (Period ${currentPeriod} at ${formatTime(now)})`,
+                "green"
+            );
+
+            nameInput.value = "";
+            numberInput.value = "";
+
+        } catch (error) {
+            console.error(error);
+            showFeedback("Could not save your sign-out. Please try again.", "red");
         }
-
-        const currentPeriod = getCurrentPeriod(now);
-
-        const newRecord = {
-            id: Date.now(),
-            date: today,
-            period: currentPeriod,
-            studentName: student.name,
-            studentNumber: student.number,
-            signOutTime: formatTime(now),
-            signInTime: "—",
-            status: "Out"
-        };
-
-        records.push(newRecord);
-        saveRecords(records);
-
-        showFeedback(
-            `Signed OUT: ${student.name} (Period ${currentPeriod} at ${newRecord.signOutTime})`,
-            "green"
-        );
-        nameInput.value = "";
-        numberInput.value = "";
     });
 
-    // ACTION 2: Student Signs In (Returning to class)
-    signInBtn.addEventListener("click", () => {
+    // STUDENT SIGNS IN
+    signInBtn.addEventListener("click", async () => {
         const student = validateInputs();
         if (!student) return;
 
-        const now = new Date();
-        const today = getTodayDateString(now);
-        const records = getRecords();
+        try {
+            const now = new Date();
+            const today = getTodayDateString(now);
+            const records = await getTodaysRecords(today);
 
-        // Find the student's open "Out" record for today
-        const activeRecord = records.find(
-            (r) =>
-                r.studentNumber === student.number &&
-                r.date === today &&
-                r.status === "Out"
-        );
-
-        if (!activeRecord) {
-            showFeedback(
-                `No active sign-out found for Student #${student.number}. Please Sign Out when leaving.`,
-                "red"
+            const activeRecord = records.find(
+                record =>
+                    record.studentNumber === student.number &&
+                    record.status === "Out"
             );
-            return;
+
+            if (!activeRecord) {
+                showFeedback(
+                    `No active sign-out found for Student #${student.number}. Please Sign Out when leaving.`,
+                    "red"
+                );
+                return;
+            }
+
+            const recordRef = doc(db, "hallPassRecords", activeRecord.id);
+
+            await updateDoc(recordRef, {
+                signInTime: formatTime(now),
+                status: "Returned"
+            });
+
+            showFeedback(
+                `Welcome back, ${activeRecord.studentName}! Signed IN at ${formatTime(now)}.`,
+                "green"
+            );
+
+            nameInput.value = "";
+            numberInput.value = "";
+
+        } catch (error) {
+            console.error(error);
+            showFeedback("Could not save your sign-in. Please try again.", "red");
         }
-
-        // Update the existing record with Sign-In time and status
-        activeRecord.signInTime = formatTime(now);
-        activeRecord.status = "Returned";
-
-        saveRecords(records);
-
-        showFeedback(
-            `Welcome back, ${activeRecord.studentName}! Signed IN at ${activeRecord.signInTime}.`,
-            "green"
-        );
-        nameInput.value = "";
-        numberInput.value = "";
     });
 });
