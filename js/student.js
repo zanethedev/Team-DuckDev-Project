@@ -27,10 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Helper: Format timestamp cleanly (e.g., "2:16:05 PM")
     function formatTime(dateObj) {
-        return dateObj.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
+    return dateObj.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
         });
     }
 
@@ -52,14 +51,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Helper: Validate inputs and show messages
     function validateInputs() {
-        const name = nameInput.value.trim();
-        const number = numberInput.value.trim();
+    const name = nameInput.value.trim();
+    const number = numberInput.value.trim();
 
-        if (!name || !number) {
-            showFeedback("Please enter both your Student Name and Student Number.", "red");
-            return null;
-        }
-        return { name, number };
+    if (!name || !number) {
+        showFeedback("Please enter both your Student Name and Student Number.", "red");
+        return null;
+    }
+
+    // Check that the student number contains only digits and is 6–7 digits long
+    if (!/^\d{6,7}$/.test(number)) {
+        showFeedback("Student Number must be valid.", "red");
+        return null;
+    }
+
+    return { name, number };
     }
 
     function showFeedback(message, color) {
@@ -86,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (activeRecord) {
             showFeedback(
-                `${student.name} is already signed out (since ${activeRecord.signOutTime}). Please Sign In first.`,
+                `${student.name} is already signed out (since ${activeRecord.signOutTime.replace(/:\d{2}(?=\s*[AP]M$)/, "")}). Please Sign In first.`,
                 "orange"
             );
             return;
