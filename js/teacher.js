@@ -7,7 +7,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 // Teacher login password
-const TEACHER_PASSWORD = "DuckTeacher2026!";
+const TEACHER_PASSWORD = "lemmein";
 
 let currentSelectedPeriod = 1;
 let allRecords = [];
