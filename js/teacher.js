@@ -1,4 +1,3 @@
-
 import { db } from "./firebase.js";
 import {
     collection,
@@ -7,10 +6,51 @@ import {
     onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
+// Teacher login password
+const TEACHER_PASSWORD = "DuckTeacher2026!";
+
 let currentSelectedPeriod = 1;
 let allRecords = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    // Handle teacher login
+    const loginForm = document.getElementById("loginForm");
+    const passwordInput = document.getElementById("teacherPassword");
+    const loginMessage = document.getElementById("loginMessage");
+
+    // Check if teacher has already logged in
+    if (sessionStorage.getItem("teacherLoggedIn") === "true") {
+        document.getElementById("loginSection").hidden = true;
+        document.getElementById("dashboardSection").hidden = false;
+        loadDashboard();
+    }
+
+    // Handle teacher login
+    loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (passwordInput.value === TEACHER_PASSWORD) {
+
+            sessionStorage.setItem("teacherLoggedIn", "true");
+
+            document.getElementById("loginSection").hidden = true;
+            document.getElementById("dashboardSection").hidden = false;
+
+            loginMessage.textContent = "";
+
+            loadDashboard();
+
+        } else {
+            loginMessage.textContent = "Incorrect password. Please try again.";
+            passwordInput.value = "";
+        }
+    });
+
+});
+
+// Load the teacher dashboard
+function loadDashboard() {
 
     // Display today's date
     const dateElement = document.getElementById("date");
@@ -56,10 +96,10 @@ document.addEventListener("DOMContentLoaded", () => {
         errorCell.textContent = "Unable to load records. Please try again.";
 
         errorRow.appendChild(errorCell);
+        errorRow.appendChild(errorCell);
         tableBody.appendChild(errorRow);
     });
-
-});
+}
 
 // Display records for the selected period
 function showPeriod(periodNumber) {
@@ -126,5 +166,6 @@ function showPeriod(periodNumber) {
     });
 }
 
-// Make showPeriod available to the HTML onclick buttons
+// Make showPeriod available to the HTML buttons
 window.showPeriod = showPeriod;
+
