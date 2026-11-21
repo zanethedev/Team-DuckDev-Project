@@ -73,6 +73,47 @@
 
         </section>
 
+
+    
+    <section id="editSection" hidden>
+        <h3>Edit Student Record</h3>
+
+        <form id="editForm">
+
+            <div class="edit-row">
+                <div class="edit-field">
+                    <label for="editName">Student Name:</label>
+                    <input type="text" id="editName" required>
+                </div>
+
+                <div class="edit-field">
+                    <label for="editNumber">Student Number:</label>
+                    <input type="text" id="editNumber" required>
+                </div>
+            </div>
+
+            <div class="edit-row">
+                <div class="edit-field">
+                    <label for="editOutTime">Sign-Out Time:</label>
+                    <input type="text" id="editOutTime" required>
+                </div>
+
+                <div class="edit-field">
+                    <label for="editInTime">Sign-In Time:</label>
+                    <input type="text" id="editInTime">
+                </div>
+            </div>
+
+            <div class="edit-buttons">
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancelEdit">Cancel</button>
+            </div>
+
+        </form>
+    </section>
+
+
+
     </main>
 </body>
 </html>

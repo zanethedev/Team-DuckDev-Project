@@ -14,6 +14,7 @@ const TEACHER_PASSWORD = "lemmein";
 
 let currentSelectedPeriod = 1;
 let allRecords = [];
+let editingRecordId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -48,6 +49,49 @@ document.addEventListener("DOMContentLoaded", () => {
             loginMessage.textContent = "Incorrect password. Please try again.";
             passwordInput.value = "";
         }
+    });
+
+    // Save edited record
+    document.getElementById("editForm").addEventListener("submit", async (event) => {
+
+        event.preventDefault();
+
+        const newName = document.getElementById("editName").value.trim();
+        const newNumber = document.getElementById("editNumber").value.trim();
+        const newOutTime = document.getElementById("editOutTime").value.trim();
+        const newInTime = document.getElementById("editInTime").value.trim();
+
+        if (!newName || !/^\d{6,7}$/.test(newNumber) || !newOutTime) {
+            alert("Please enter a valid name, student number, and sign-out time.");
+            return;
+        }
+
+        try {
+            await updateDoc(doc(db, "hallPassRecords", editingRecordId), {
+                studentName: newName,
+                studentNumber: newNumber,
+                signOutTime: newOutTime,
+                signInTime: newInTime || "—",
+                status: newInTime ? "Returned" : "Out"
+            });
+
+            document.getElementById("editSection").hidden = true;
+            editingRecordId = null;
+
+            alert("Record updated successfully!");
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not update record. Please try again.");
+        }
+    });
+
+    // Cancel editing
+    document.getElementById("cancelEdit").addEventListener("click", () => {
+
+        document.getElementById("editSection").hidden = true;
+        editingRecordId = null;
+
     });
 
 });
@@ -166,13 +210,19 @@ function showPeriod(periodNumber) {
         editButton.textContent = "Edit";
 
         editButton.addEventListener("click", () => {
-            editRecord(
-                record.id,
-                record.studentName,
-                record.studentNumber,
-                record.signOutTime,
-                record.signInTime
-            );
+
+            editingRecordId = record.id;
+
+            document.getElementById("editName").value = record.studentName;
+            document.getElementById("editNumber").value = record.studentNumber;
+            document.getElementById("editOutTime").value = record.signOutTime;
+            document.getElementById("editInTime").value = record.signInTime === "—" ? "" : record.signInTime;
+
+            document.getElementById("editSection").hidden = false;
+
+            document.getElementById("editSection").scrollIntoView({
+                behavior: "smooth"
+            });
         });
 
         const deleteButton = document.createElement("button");
