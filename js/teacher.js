@@ -1,3 +1,4 @@
+
 import { db } from "./firebase.js";
 import {
     collection,
@@ -15,6 +16,26 @@ const TEACHER_PASSWORD = "lemmein";
 let currentSelectedPeriod = 1;
 let allRecords = [];
 let editingRecordId = null;
+let unsubscribeRecords = null;
+let currentSelectedDate = "";
+
+// Format a date as YYYY-MM-DD
+function formatDate(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+// Convert a YYYY-MM-DD date into a readable date
+function displayDate(dateString) {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+
+    return date.toLocaleDateString(undefined, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -23,11 +44,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const passwordInput = document.getElementById("teacherPassword");
     const loginMessage = document.getElementById("loginMessage");
 
+    // Date history controls
+    const historyDate = document.getElementById("historyDate");
+    const loadDateButton = document.getElementById("loadDateButton");
+    const todayButton = document.getElementById("todayButton");
+
+    const todayString = formatDate(new Date());
+
+    // Allow viewing the past 14 days
+    const oldestDate = new Date();
+    oldestDate.setDate(oldestDate.getDate() - 13);
+
+    historyDate.min = formatDate(oldestDate);
+    historyDate.max = todayString;
+    historyDate.value = todayString;
+
+    // View selected date
+    loadDateButton.addEventListener("click", () => {
+        const selectedDate = historyDate.value;
+
+        if (!selectedDate) {
+            alert("Please select a date.");
+            return;
+        }
+
+        if (selectedDate < historyDate.min || selectedDate > historyDate.max) {
+            alert("Please select a date within the available range.");
+            return;
+        }
+
+        loadDashboard(selectedDate);
+    });
+
+    // Return to today's records
+    todayButton.addEventListener("click", () => {
+        historyDate.value = todayString;
+        loadDashboard(todayString);
+    });
+
     // Check if teacher has already logged in
     if (sessionStorage.getItem("teacherLoggedIn") === "true") {
         document.getElementById("loginSection").hidden = true;
         document.getElementById("dashboardSection").hidden = false;
-        loadDashboard();
+        loadDashboard(todayString);
     }
 
     // Handle teacher login
@@ -43,7 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             loginMessage.textContent = "";
 
-            loadDashboard();
+            historyDate.value = todayString;
+            loadDashboard(todayString);
 
         } else {
             loginMessage.textContent = "Incorrect password. Please try again.";
@@ -96,32 +156,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// Load the teacher dashboard
-function loadDashboard() {
+// Load dashboard for a specific date
+function loadDashboard(dateString) {
 
-    // Display today's date
+    currentSelectedDate = dateString;
+
+    // Display selected date
     const dateElement = document.getElementById("date");
-    const today = new Date();
+    dateElement.textContent = displayDate(dateString);
 
-    dateElement.textContent = today.toLocaleDateString(undefined, {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
+    // Stop listening to the previous date
+    if (unsubscribeRecords) {
+        unsubscribeRecords();
+    }
 
-    // Get today's date in YYYY-MM-DD format
-    const todayString =
-        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    // Clear previous records
+    allRecords = [];
+    showPeriod(currentSelectedPeriod);
 
-    // Load today's records from Firestore
+    // Query Firebase using the selected date
     const recordsQuery = query(
         collection(db, "hallPassRecords"),
-        where("date", "==", todayString)
+        where("date", "==", dateString)
     );
 
-    // Automatically update when records change
-    onSnapshot(recordsQuery, (snapshot) => {
+    // Automatically update when Firebase records change
+    unsubscribeRecords = onSnapshot(recordsQuery, (snapshot) => {
 
         allRecords = snapshot.docs.map(document => ({
             id: document.id,
@@ -131,6 +191,7 @@ function loadDashboard() {
         showPeriod(currentSelectedPeriod);
 
     }, (error) => {
+
         console.error("Error loading records:", error);
 
         const tableBody = document.getElementById("recordsTable");
@@ -142,7 +203,6 @@ function loadDashboard() {
         errorCell.colSpan = 6;
         errorCell.textContent = "Unable to load records. Please try again.";
 
-        errorRow.appendChild(errorCell);
         errorRow.appendChild(errorCell);
         tableBody.appendChild(errorRow);
     });
@@ -172,7 +232,7 @@ function showPeriod(periodNumber) {
         emptyCell.colSpan = 6;
         emptyCell.style.textAlign = "center";
         emptyCell.textContent =
-            `No sign-out records for Period ${periodNumber} today.`;
+            `No sign-out records for Period ${periodNumber} on ${displayDate(currentSelectedDate)}.`;
 
         emptyRow.appendChild(emptyCell);
         tableBody.appendChild(emptyRow);
@@ -217,7 +277,8 @@ function showPeriod(periodNumber) {
             document.getElementById("editName").value = record.studentName;
             document.getElementById("editNumber").value = record.studentNumber;
             document.getElementById("editOutTime").value = record.signOutTime;
-            document.getElementById("editInTime").value = record.signInTime === "—" ? "" : record.signInTime;
+            document.getElementById("editInTime").value =
+                record.signInTime === "—" ? "" : record.signInTime;
 
             document.getElementById("editSection").hidden = false;
 
@@ -247,6 +308,7 @@ function showPeriod(periodNumber) {
         tableBody.appendChild(row);
     });
 }
+
 // Update an existing record
 async function editRecord(recordId, newName, newNumber, newOutTime, newInTime) {
     try {
@@ -267,6 +329,7 @@ async function editRecord(recordId, newName, newNumber, newOutTime, newInTime) {
 
 // Delete an existing record
 async function deleteRecord(recordId) {
+
     if (!confirm("Are you sure you want to delete this record?")) {
         return;
     }
@@ -284,4 +347,3 @@ async function deleteRecord(recordId) {
 
 // Make showPeriod available to the HTML buttons
 window.showPeriod = showPeriod;
-
