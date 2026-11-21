@@ -124,9 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "green"
             );
 
-            nameInput.value = "";
-            numberInput.value = "";
-
         } catch (error) {
             console.error(error);
             showFeedback("Could not save your sign-out. Please try again.", "red");
@@ -168,9 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 `Welcome back, ${activeRecord.studentName}! Signed IN at ${formatTime(now)}.`,
                 "green"
             );
-
-            nameInput.value = "";
-            numberInput.value = "";
 
         } catch (error) {
             console.error(error);

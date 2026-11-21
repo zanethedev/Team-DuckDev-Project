@@ -3,7 +3,10 @@ import {
     collection,
     query,
     where,
-    onSnapshot
+    onSnapshot,
+    updateDoc,
+    deleteDoc,
+    doc
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 // Teacher login password
@@ -92,7 +95,7 @@ function loadDashboard() {
         const errorRow = document.createElement("tr");
         const errorCell = document.createElement("td");
 
-        errorCell.colSpan = 5;
+        errorCell.colSpan = 6;
         errorCell.textContent = "Unable to load records. Please try again.";
 
         errorRow.appendChild(errorCell);
@@ -122,7 +125,7 @@ function showPeriod(periodNumber) {
         const emptyRow = document.createElement("tr");
         const emptyCell = document.createElement("td");
 
-        emptyCell.colSpan = 5;
+        emptyCell.colSpan = 6;
         emptyCell.style.textAlign = "center";
         emptyCell.textContent =
             `No sign-out records for Period ${periodNumber} today.`;
@@ -156,14 +159,75 @@ function showPeriod(periodNumber) {
             record.status === "Out" ? "red" : "green";
         statusCell.style.fontWeight = "bold";
 
+                // Create Edit and Delete buttons
+        const actionsCell = document.createElement("td");
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+
+        editButton.addEventListener("click", () => {
+            editRecord(
+                record.id,
+                record.studentName,
+                record.studentNumber,
+                record.signOutTime,
+                record.signInTime
+            );
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+
+        deleteButton.addEventListener("click", () => {
+            deleteRecord(record.id);
+        });
+
+        actionsCell.appendChild(editButton);
+        actionsCell.appendChild(deleteButton);
+
         row.appendChild(nameCell);
         row.appendChild(numberCell);
         row.appendChild(signOutCell);
         row.appendChild(signInCell);
         row.appendChild(statusCell);
+        row.appendChild(actionsCell);
 
         tableBody.appendChild(row);
     });
+}
+// Update an existing record
+async function editRecord(recordId, newName, newNumber, newOutTime, newInTime) {
+    try {
+        await updateDoc(doc(db, "hallPassRecords", recordId), {
+            studentName: newName,
+            studentNumber: newNumber,
+            signOutTime: newOutTime,
+            signInTime: newInTime
+        });
+
+        alert("Record updated successfully!");
+
+    } catch (error) {
+        console.error(error);
+        alert("Could not update record.");
+    }
+}
+
+// Delete an existing record
+async function deleteRecord(recordId) {
+    if (!confirm("Are you sure you want to delete this record?")) {
+        return;
+    }
+
+    try {
+        await deleteDoc(doc(db, "hallPassRecords", recordId));
+
+        alert("Record deleted successfully!");
+
+    } catch (error) {
+        console.error(error);
+        alert("Could not delete record.");
+    }
 }
 
 // Make showPeriod available to the HTML buttons
