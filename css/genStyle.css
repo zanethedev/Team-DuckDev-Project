@@ -10,13 +10,16 @@ body{
     min-height: 100dvh;
     margin: 0;
     padding: clamp(0.75rem, 4vw, 2rem);
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     justify-content: safe center;
     gap: clamp(0.5rem, 1.5vh, 1rem);
+
     text-align: center;
+    font-family: Arial, sans-serif;
+    color: #263449;
     font-size: clamp(0.875rem, 1vw + 0.6rem, 1.125rem);
 }
 
@@ -28,43 +31,108 @@ body > *{
 .content-panel{
     width: min(100%, 80rem);
     padding: clamp(1rem, 3vw, 2rem);
-    border: 2px solid #fff;
+    border: 1px solid #d5dce5;
     border-radius: 0.75rem;
-    background: rgba(255, 255, 255);
-    transform: translateY(-0.5rem);
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(30, 50, 75, 0.10);
 }
 
-table{
+/* Headings */
+h1, h2, h3 {
+    color: navy;
+}
+
+/* Navigation header */
+.navigation-header {
+    width: min(100%, 80rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: navy;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 10px rgba(30, 50, 75, 0.12);
+}
+
+.navigation-header a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navigation-header a:hover {
+    text-decoration: underline;
+}
+
+/* Date history controls */
+.history-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-controls label {
+    color: white;
+}
+
+/* Buttons */
+button {
+    background: royalblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.3rem 1rem;
+    cursor: pointer;
+    font: inherit;
+    transition: background 0.2s;
+}
+
+/* Period buttons */
+.periodButtons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Inputs */
+input {
+    max-width: 100%;
+    font: inherit;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+}
+
+input:focus {
+    outline: 2px solid #7897bb;
+    border-color: navy;
+}
+
+/* Table */
+table {
     margin-left: auto;
     margin-right: auto;
     display: block;
     max-width: 100%;
     width: fit-content;
     overflow-x: auto;
+    border-collapse: collapse;
 }
 
-input,
-button{
-    max-width: 100%;
-    font: inherit;
-} 
-
-.periodButtons {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
+th {
+    background: #e8edf4;
+    color: navy;
 }
 
-.navigation-header {
-    width: min(100%, 80rem);
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255);
-    border-radius: 0.75rem;
-    margin-bottom: 1rem;
+th, td {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d5dce5;
 }
 
 .history-controls {
@@ -74,13 +142,12 @@ button{
     margin-left: auto;
 }
 
-
 #editSection {
     margin-top: 25px;
     padding: 25px;
-    border: 1px solid #ccc;
+    border: 1px solid #d5dce5;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    background-color: #f6f8fb;
 }
 
 #editSection h3 {
@@ -107,15 +174,15 @@ button{
 
 .edit-field input {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #cbd5e1;
     border-radius: 5px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .edit-buttons {
     display: flex;
     gap: 10px;
+    justify-content: center;
     margin-top: 10px;
 }
 
@@ -123,4 +190,35 @@ button{
     .edit-row {
         flex-direction: column;
     }
+}
+
+/* Table action buttons */
+.table-action {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border: 1px solid #d5dce5;
+    border-radius: 4px;
+    background: #f1f3f6;
+    color: #34445a;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.table-action:hover {
+    background: #e2e7ed;
+}
+
+/* Edit button */
+.edit-action {
+    color: #34577e;
+}
+
+/* Delete button */
+.delete-action {
+    color: #a34b4b;
+}
+
+.delete-action:hover {
+    background: #f4e8e8;
+    border-color: #dfc1c1;
 }

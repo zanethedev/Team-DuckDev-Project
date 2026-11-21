@@ -203,11 +203,12 @@ function showPeriod(periodNumber) {
             record.status === "Out" ? "red" : "green";
         statusCell.style.fontWeight = "bold";
 
-                // Create Edit and Delete buttons
+        // Create Edit and Delete buttons
         const actionsCell = document.createElement("td");
 
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
+        editButton.className = "table-action edit-action";
 
         editButton.addEventListener("click", () => {
 
@@ -227,6 +228,7 @@ function showPeriod(periodNumber) {
 
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
+        deleteButton.className = "table-action delete-action";
 
         deleteButton.addEventListener("click", () => {
             deleteRecord(record.id);
