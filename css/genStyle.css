@@ -1,8 +1,9 @@
-*{
+
+* {
     box-sizing: border-box;
 }
 
-body{
+body {
     background: linear-gradient(royalblue, navy);
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -20,15 +21,18 @@ body{
     text-align: center;
     font-family: Arial, sans-serif;
     color: #263449;
-    font-size: clamp(0.875rem, 1vw + 0.6rem, 1.125rem);
+
+    /* Better text sizing across devices */
+    font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
 }
 
-body > *{
+body > * {
     flex: 0 0 auto;
     max-width: 100%;
 }
 
-.content-panel{
+/* Main content panel */
+.content-panel {
     width: min(100%, 80rem);
     padding: clamp(1rem, 3vw, 2rem);
     border: 1px solid #d5dce5;
@@ -50,7 +54,7 @@ h1, h2, h3 {
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
-    padding: 0.5rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     background: navy;
     border-radius: 0.75rem;
     margin-bottom: 1rem;
@@ -86,10 +90,14 @@ button {
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 0.3rem 1rem;
+    padding: 0.6rem 1rem;
     cursor: pointer;
     font: inherit;
     transition: background 0.2s;
+}
+
+button:hover {
+    background: navy;
 }
 
 /* Period buttons */
@@ -104,7 +112,7 @@ button {
 input {
     max-width: 100%;
     font: inherit;
-    padding: 0.6rem;
+    padding: 0.65rem;
     border: 1px solid #cbd5e1;
     border-radius: 5px;
 }
@@ -114,7 +122,7 @@ input:focus {
     border-color: navy;
 }
 
-/* Table */
+/* Tables */
 table {
     margin-left: auto;
     margin-right: auto;
@@ -135,13 +143,7 @@ th, td {
     border: 1px solid #d5dce5;
 }
 
-.history-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-}
-
+/* Edit section */
 #editSection {
     margin-top: 25px;
     padding: 25px;
@@ -186,12 +188,6 @@ th, td {
     margin-top: 10px;
 }
 
-@media (max-width: 600px) {
-    .edit-row {
-        flex-direction: column;
-    }
-}
-
 /* Table action buttons */
 .table-action {
     padding: 6px 12px;
@@ -208,12 +204,10 @@ th, td {
     background: #e2e7ed;
 }
 
-/* Edit button */
 .edit-action {
     color: #34577e;
 }
 
-/* Delete button */
 .delete-action {
     color: #a34b4b;
 }
@@ -222,3 +216,140 @@ th, td {
     background: #f4e8e8;
     border-color: #dfc1c1;
 }
+
+/* ============================= */
+/* MOBILE RESPONSIVENESS */
+/* ============================= */
+
+@media (max-width: 600px) {
+
+    body {
+        /* Prevent the page from being vertically squeezed/centered */
+        justify-content: center;
+
+        /* Give the page more usable space */
+        padding: 12px;
+        gap: 12px;
+
+        /* Prevent text from appearing zoomed out */
+        font-size: 16px;
+    }
+
+    /* Make panels occupy the available phone width */
+    .content-panel {
+        width: 100%;
+        padding: 18px 14px;
+        border-radius: 12px;
+    }
+
+    /* Make headings more appropriate for phone screens */
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Homepage and student form inputs */
+    input {
+        font-size: 16px;
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* Easier-to-tap buttons */
+    button {
+        font-size: 16px;
+        min-height: 44px;
+        padding: 10px 14px;
+    }
+
+    /* Period buttons */
+    .periodButtons {
+        gap: 8px;
+        width: 100%;
+    }
+
+    .periodButtons button {
+        flex: 1 1 40%;
+    }
+
+    /* Navigation header */
+    .navigation-header {
+        width: 100%;
+        flex-direction: column;
+        padding: 14px;
+        gap: 12px;
+    }
+
+    /* Date controls */
+    .history-controls {
+        width: 100%;
+        flex-direction: column;
+        margin-left: 0;
+        gap: 8px;
+    }
+
+    .history-controls input,
+    .history-controls button {
+        width: 100%;
+    }
+
+    /* Edit form */
+    #editSection {
+        padding: 16px;
+    }
+
+    .edit-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .edit-buttons {
+        flex-direction: column;
+    }
+
+    .edit-buttons button {
+        width: 100%;
+    }
+
+    /* Table remains scrollable instead of shrinking unreadably */
+    table {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    th, td {
+        padding: 8px;
+        white-space: nowrap;
+    }
+
+    /* Keep Edit/Delete buttons compact */
+    .table-action {
+        min-height: 34px;
+        padding: 5px 9px;
+        font-size: 13px;
+    }
+}
+
+/* Smaller phones */
+@media (max-width: 380px) {
+
+    body {
+        padding: 8px;
+    }
+
+    .content-panel {
+        padding: 14px 10px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+}
+
