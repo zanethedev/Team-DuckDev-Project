@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Check if teacher has already logged in
-    if (sessionStorage.getItem("teacherLoggedIn") === "true") {
+    if (localStorage.getItem("teacherLoggedIn") === "true") {
         document.getElementById("loginSection").hidden = true;
         document.getElementById("dashboardSection").hidden = false;
         loadDashboard(todayString);
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (passwordInput.value === TEACHER_PASSWORD) {
 
-            sessionStorage.setItem("teacherLoggedIn", "true");
+            localStorage.setItem("teacherLoggedIn", "true");
 
             document.getElementById("loginSection").hidden = true;
             document.getElementById("dashboardSection").hidden = false;
