@@ -16,7 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     nameInput.value = localStorage.getItem("savedStudentName") || "";
     numberInput.value = localStorage.getItem("savedStudentNumber") || "";
 
-    // Automatically save answers whenever they change
+    window.addEventListener("pageshow", () => {
+        nameInput.value = localStorage.getItem("savedStudentName") || "";
+        numberInput.value = localStorage.getItem("savedStudentNumber") || "";
+    });
+
     nameInput.addEventListener("input", () => {
         localStorage.setItem("savedStudentName", nameInput.value);
     });
@@ -24,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
     numberInput.addEventListener("input", () => {
         localStorage.setItem("savedStudentNumber", numberInput.value);
     });
+
+    console.log("Saved name:", localStorage.getItem("savedStudentName"));
+    console.log("Saved number:", localStorage.getItem("savedStudentNumber"));
 
     const buttons = document.querySelectorAll("form button");
 
