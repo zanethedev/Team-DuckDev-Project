@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function getCurrentPeriod(dateObj) {
         const totalMinutes = dateObj.getHours() * 60 + dateObj.getMinutes();
 
-        if (totalMinutes >= 505 && totalMinutes < 580) return 1;
-        if (totalMinutes >= 583 && totalMinutes < 658) return 2;
-        if (totalMinutes >= 733 && totalMinutes < 808) return 3;
-        if (totalMinutes >= 811 && totalMinutes < 886) return 4;
+        if (totalMinutes >= 505 && totalMinutes <= 580) return 1;
+        if (totalMinutes >= 583 && totalMinutes <= 658) return 2;
+        if (totalMinutes >= 733 && totalMinutes <= 808) return 3;
+        if (totalMinutes >= 811 && totalMinutes <= 886) return 4;
 
         return 1;
     }
