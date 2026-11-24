@@ -12,6 +12,19 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
     const nameInput = document.getElementById("studentName");
     const numberInput = document.getElementById("studentNumber");
+    // Restore previously entered student information
+    nameInput.value = localStorage.getItem("savedStudentName") || "";
+    numberInput.value = localStorage.getItem("savedStudentNumber") || "";
+
+    // Automatically save answers whenever they change
+    nameInput.addEventListener("input", () => {
+        localStorage.setItem("savedStudentName", nameInput.value);
+    });
+
+    numberInput.addEventListener("input", () => {
+        localStorage.setItem("savedStudentNumber", numberInput.value);
+    });
+
     const buttons = document.querySelectorAll("form button");
 
     const signOutBtn = buttons[0];
