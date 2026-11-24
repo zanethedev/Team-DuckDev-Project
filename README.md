@@ -24,5 +24,5 @@ ICS4UO Team Development Project
 - Edit Tool:
   - Correct existing student information and/or sign-out/sign-in times
 - Delete Tool:
-  - Delete student information on the table
+  - Remove any incorrect or unnecessary records
 
