@@ -18,9 +18,11 @@ ICS4UO Team Development Project
 
 ### Teacher Homepage
 - Log in using the teacher password.
+  - (Note: You only need to log in once, the website will remember that)
 - View student sign-out records organized by school date and period.
 - Select different periods to view their corresponding records.
 - Use the date selector in the top right to view records from previous school days.
+  - (Note: Only the past 14 days of records are stored)
 - Edit Tool:
   - Correct existing student information and/or sign-out/sign-in times
 - Delete Tool:
